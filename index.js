@@ -5,7 +5,8 @@ const pendingList = document.querySelector("#pendingList");
 const ls = windows.localStorage;
 let id = 0;
 
-const db;
+const tododb = [];
+const pendb = [];
 
 function submitHandler(event){
     event.preventDefault();
@@ -16,6 +17,9 @@ function submitHandler(event){
 
 function deleteElement(event){
     const target = event.target.parentElement;
+    const id = target.id;
+    db.splice(db.indexOf(id), 1);
+    saveLs();
     todoList.removeChild(target);
 }
 
@@ -41,6 +45,7 @@ function moveTodo(event){
 
 function addPendingList(word){
     const li = document.createElement("li");
+    li.id = id;
     const text = document.createElement("span");
     text.innerText = word;
     const delBtn = document.createElement("button");
@@ -57,6 +62,7 @@ function addPendingList(word){
 
 function addTodoList(word){
     const li = document.createElement("li");
+    li.id = id;
     const text = document.createElement("span");
     text.innerText = word;
     const delBtn = document.createElement("button");
@@ -75,20 +81,29 @@ function addTodoList(word){
         word,
     };
     id++;
-    db.push(object);
-    console.log(db);
+    tododb.push(object);
+    console.log(tododb);
     saveLs();
 }
 
 function saveLs(){
-    ls.setItem("todos", JSON.stringify(db));
+    ls.setItem("todos", JSON.stringify(tododb));
+    ls.setItem("pendings", JSON.stringify(pendingdb));
 }
 
 function loadLs(){
     todos = JSON.parse(ls.getItem("todos"));
-    todos.forEach(todo => {
-        addTodoList(todo.word);
-    });
+    if(todos){
+        todos.forEach((todo) => {
+            addTodoList(todo.word);
+        });
+    }
+    pendings = JSON.parse(ls.getItem("pendings"));
+    if(pendings){
+        pendings.forEach((pending) => {
+            addTodoList(pending.word);
+        });
+    }
 }
 
 function init(){
